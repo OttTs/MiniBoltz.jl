@@ -1,0 +1,13 @@
+name = "MiniBoltz"
+uuid = "e1c3c5ec-9cd1-4ed8-b8fe-3c37b93b4c88"
+authors = ["Tobias Ott"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.10.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
