@@ -27,7 +27,7 @@ struct Particle
     velocity::SVector{3, Float64}
 end
 
-function init_uniform(n::Real, u::AbstractVector{<:Real}, T::Real, mesh::Mesh, species::Species)
+function init_uniform(n::Real, u::AbstractVector{<:Real}, T::Real, mesh::SimulationMesh, species::Species)
     L = mesh.limits[2] - mesh.limits[1]
     Nₚ = round(Int, n * L / species.weighting)
     σ² = BOLTZMANN_CONSTANT * T / species.mass

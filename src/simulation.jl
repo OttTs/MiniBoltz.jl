@@ -4,7 +4,7 @@ function simulate!(
     species::Species,
     time_step::Real,
     num_steps::Integer,
-    mesh::Mesh,
+    mesh::SimulationMesh,
     boundary_conditions::Tuple{<:AbstractBoundaryCondition, <:AbstractBoundaryCondition},
     relaxation_method::RelaxationMethod;
     do_stochastic_interpolation::Bool=false,

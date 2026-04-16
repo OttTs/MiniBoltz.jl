@@ -8,7 +8,7 @@ for _ in 1:10^6
     push!(particles, Particle(x, v))
 end
 
-m = MiniBoltz.Mesh((-1, 1), 1)
+m = MiniBoltz.SimulationMesh((-1, 1), 1)
 
 # 1. Constant
 n = MiniBoltz.Variable(Float64; N=0, mesh=m)

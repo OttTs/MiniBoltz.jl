@@ -5,8 +5,8 @@ using StaticArrays: SVector, SMatrix
 using LinearAlgebra: tr
 
 @testset "MiniBoltz.jl" begin
-    @testset "Mesh" begin
-        mesh = Mesh((0.0, 1.0), 10)
+    @testset "SimulationMesh" begin
+        mesh = SimulationMesh((0.0, 1.0), 10)
 
         @test MiniBoltz.element_volume(mesh) ≈ 0.1
 
@@ -19,7 +19,7 @@ using LinearAlgebra: tr
     end
 
     @testset "Variables" begin
-        mesh = Mesh((0.0, 1.0), 10)
+        mesh = SimulationMesh((0.0, 1.0), 10)
 
         f = MiniBoltz.Variable(Float64; N=1, mesh=mesh)
         MiniBoltz.project_particle!(0.44, MiniBoltz.element_volume(mesh), f)
@@ -37,7 +37,7 @@ using LinearAlgebra: tr
     end
 
     @testset "Particle init" begin
-        mesh = Mesh((0.0, 1.0), 10)
+        mesh = SimulationMesh((0.0, 1.0), 10)
         species = Species(1e16, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
         n, u, T = 1e20, SVector(200.0, 0.0, 0.0), 273
         particles = init_uniform(n, u, T, mesh, species)
@@ -108,7 +108,7 @@ using LinearAlgebra: tr
     @testset "Particle collision" begin
         # TODO For now, just check that the collision step conserves momentum and energy
         species = Species(1, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
-        mesh = Mesh((0.0, 1.0), 1)
+        mesh = SimulationMesh((0.0, 1.0), 1)
 
         u, T = SVector(200.0, 0.0, 0.0), 273
 
@@ -137,7 +137,7 @@ using LinearAlgebra: tr
         particles = [Particle(0.5, SVector(1.0, 0.0, 0.0))]
         species = Species(1, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
         time_step = 2.2
-        mesh = Mesh((0.0, 1.0), 1)
+        mesh = SimulationMesh((0.0, 1.0), 1)
         bcs = (SpecularWall(), DiffuseWall(SVector(-1.0, 0.0, 0.0), 0.0))
         MiniBoltz.movement_step!(particles, species, time_step, mesh, bcs)
         @test particles[1].position ≈ 0.7
@@ -145,7 +145,7 @@ using LinearAlgebra: tr
 
     @testset "Simple simulation" begin
         species = Species(1e16, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
-        mesh = Mesh((0.0, 1.0), 10)
+        mesh = SimulationMesh((0.0, 1.0), 10)
 
         particles = init_uniform(1e20, SVector(200.0, 0.0, 0.0), 273, mesh, species)
         time_step = 1e-6

@@ -1,22 +1,22 @@
-struct Mesh
+struct SimulationMesh
     limits::Tuple{Float64, Float64}
     num_elements::Int64
 end
 
-element_volume(mesh::Mesh) = (mesh.limits[2] - mesh.limits[1]) / mesh.num_elements
+element_volume(mesh::SimulationMesh) = (mesh.limits[2] - mesh.limits[1]) / mesh.num_elements
 
-function element(x, m::Mesh)
+function element(x, m::SimulationMesh)
     x == m.limits[2] && return m.num_elements
     floor(Int, (x - m.limits[1]) / element_volume(m)) + 1
 end
-to_reference(x, element, m::Mesh) = 2((x - m.limits[1]) / element_volume(m) - element) + 1
-to_physical(ξ, element, m::Mesh) = m.limits[1] + ((ξ - 1)/2 + element) * element_volume(m)
+to_reference(x, element, m::SimulationMesh) = 2((x - m.limits[1]) / element_volume(m) - element) + 1
+to_physical(ξ, element, m::SimulationMesh) = m.limits[1] + ((ξ - 1)/2 + element) * element_volume(m)
 
 
 struct Variable{N,T}
     _dofs::Vector{T}
-    _mesh::Mesh
-    function Variable(T::Type; N::Integer, mesh::Mesh)
+    _mesh::SimulationMesh
+    function Variable(T::Type; N::Integer, mesh::SimulationMesh)
         @assert 0 ≤ N ≤ 1 "Only constant (N=0) and linear (N=1) basis functions are supported."
         new{N,T}(zeros(T, (N + 1) * mesh.num_elements), mesh)
     end
