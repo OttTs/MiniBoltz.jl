@@ -54,7 +54,7 @@ using LinearAlgebra: tr
         τ = MiniBoltz.relaxation_time(n, T, species)
 
         # Sample from two gaussians with mean u and -u
-        N = 50000
+        N = 100000
         σ² = BOLTZMANN_CONSTANT * T / species.mass
         v = √σ²*randn(SVector{3}, N)
         for i in 1:N÷2
@@ -94,7 +94,7 @@ using LinearAlgebra: tr
         T = 300.0
         bc = DiffuseWall(u, T)
         species = Species(1, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
-        samples = [MiniBoltz.reflect(0, bc, species) for _ in 1:100000]
+        samples = [MiniBoltz.reflect(-ones(SVector{3,Float64}), bc, species) for _ in 1:100000]
         σ² = BOLTZMANN_CONSTANT * T / species.mass
         Σ = SMatrix{3}(σ² * (4 - π) / 2, 0, 0, 0, σ², 0, 0, 0, σ²)
         @test mean(samples) ≈ u + SVector(√(σ² * π / 2), 0, 0) rtol=0.01

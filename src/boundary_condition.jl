@@ -10,11 +10,12 @@ end
 
 struct SpecularWall <: AbstractBoundaryCondition end
 
-function reflect(_, bc::DiffuseWall, species::Species)
+function reflect(v::SVector{3,<:Real}, bc::DiffuseWall, species::Species)
     uₘₚ = most_probable_velocity(bc.temperature, species.mass)
     zs = samplezs(0)
+    pm = sign(v[1]) == 0 ? 1 : sign(v[1])
     return bc.velocity + SVector{3, Float64}(
-        -zs * uₘₚ,
+        pm * zs * uₘₚ,
         √0.5 * uₘₚ * randn(),
         √0.5 * uₘₚ * randn()
     )
