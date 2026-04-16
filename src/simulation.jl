@@ -5,7 +5,7 @@ function simulate!(
     time_step::Real,
     num_steps::Integer,
     mesh::Mesh,
-    boundary_conditions::NTuple{2, DiffuseWall},
+    boundary_conditions::Tuple{<:AbstractBoundaryCondition, <:AbstractBoundaryCondition},
     relaxation_method::RelaxationMethod;
     do_stochastic_interpolation::Bool=false,
     polynomial_degree::Integer=0,

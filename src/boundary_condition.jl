@@ -1,10 +1,14 @@
-struct DiffuseWall
+abstract type AbstractBoundaryCondition end
+
+struct DiffuseWall <: AbstractBoundaryCondition
     velocity::SVector{3,Float64}
     temperature::Float64
     function DiffuseWall(velocity::AbstractVector, temperature::Real)
         new(SVector{3,Float64}(velocity), temperature)
     end
 end
+
+struct SpecularWall <: AbstractBoundaryCondition end
 
 function reflect(_, bc::DiffuseWall, species::Species)
     uₘₚ = most_probable_velocity(bc.temperature, species.mass)
@@ -14,6 +18,10 @@ function reflect(_, bc::DiffuseWall, species::Species)
         √0.5 * uₘₚ * randn(),
         √0.5 * uₘₚ * randn()
     )
+end
+
+function reflect(v::SVector{3,<:Real}, ::SpecularWall, ::Species)
+    return SVector(-v[1], v[2], v[3])
 end
 
 most_probable_velocity(T, m) = √(2 * BOLTZMANN_CONSTANT * T / m)

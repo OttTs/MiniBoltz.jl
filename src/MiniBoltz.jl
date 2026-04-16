@@ -29,8 +29,8 @@ include("simulation.jl")
 export BOLTZMANN_CONSTANT
 export Parameters, simulate!
 export read_particles, read_parameters
-export Particle, Species, Mesh, BoundaryCondition, RelaxationMethod
-export DiffuseWall
+export Particle, Species, Mesh, RelaxationMethod
+export DiffuseWall, SpecularWall
 export StandardESFP, ExactESFP
 export init_uniform
 

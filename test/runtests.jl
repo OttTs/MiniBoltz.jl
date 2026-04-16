@@ -99,6 +99,10 @@ using LinearAlgebra: tr
         Σ = SMatrix{3}(σ² * (4 - π) / 2, 0, 0, 0, σ², 0, 0, 0, σ²)
         @test mean(samples) ≈ u + SVector(√(σ² * π / 2), 0, 0) rtol=0.01
         @test cov(samples) ≈ Σ rtol=0.01
+
+        specular = SpecularWall()
+        v = SVector(-123.0, 4.5, -6.7)
+        @test MiniBoltz.reflect(v, specular, species) == SVector(123.0, 4.5, -6.7)
     end
 
     @testset "Particle collision" begin
@@ -134,7 +138,7 @@ using LinearAlgebra: tr
         species = Species(1, 6.63E-26, 273, 0.77, 2/3, 4.05E-10)
         time_step = 2.2
         mesh = Mesh((0.0, 1.0), 1)
-        bcs = [DiffuseWall(SVector(1.0, 0.0, 0.0), 0.0), DiffuseWall(SVector(-1.0, 0.0, 0.0), 0.0)]
+        bcs = (SpecularWall(), DiffuseWall(SVector(-1.0, 0.0, 0.0), 0.0))
         MiniBoltz.movement_step!(particles, species, time_step, mesh, bcs)
         @test particles[1].position ≈ 0.7
     end
@@ -147,7 +151,7 @@ using LinearAlgebra: tr
         time_step = 1e-6
         num_steps = 100
         num_averaging_steps = 10
-        boundary_conditions = (DiffuseWall(SVector(200.0, 0.0, 0.0), 273), DiffuseWall(SVector(-200.0, 0.0, 0.0), 273))
+        boundary_conditions = (SpecularWall(), DiffuseWall(SVector(-200.0, 0.0, 0.0), 273))
         relaxation_method = StandardESFP()
         file_name = "test_simulation"
 
