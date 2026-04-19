@@ -54,6 +54,7 @@ function simulate!(
     moment_container.averaged.m₂._dofs ./= num_averaging_steps
 
     # Output results
+    mkpath(dirname(file_name))
     jldopen(file_name * ".jld2", "w") do file
         write(file, "species", species)
         write(file, "mesh", mesh)
