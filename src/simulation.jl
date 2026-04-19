@@ -55,6 +55,7 @@ function simulate!(
 
     # Output results
     jldopen(file_name * ".jld2", "w") do file
+        write(file, "species", species)
         write(file, "mesh", mesh)
         write(file, "zeroth_moment", moment_container.averaged.m₀)
         write(file, "first_moment", moment_container.averaged.m₁)
