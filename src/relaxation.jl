@@ -38,7 +38,7 @@ function relax(v, Δt, species::Species, n, u, Σ, ::StandardESFP)
         cholesky(D).L
     catch
         # Fallback: Standard FP relaxation
-        cholesky(Symmetric(tr(Σ)/3 * I)).L
+        cholesky(Symmetric(0 * D + tr(Σ)/3 * I)).L
     end
     ξ = randn(typeof(u))
 
@@ -67,7 +67,7 @@ function relax(v, Δt, species::Species, n, u, Σ, ::ExactESFP)
         cholesky(D).L
     catch
         # Fallback: Standard FP relaxation
-        √(1 - exp(-2Δt / τ)) * cholesky(Symmetric(tr(Σ)/3 * I)).L
+        √(1 - exp(-2Δt / τ)) * cholesky(Symmetric(0 * D + tr(Σ)/3 * I)).L
     end
         ξ = randn(typeof(u))
 
