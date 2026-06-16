@@ -6,7 +6,7 @@ using CSV, JLD2
 using ProgressMeter
 #using Statistics: mean, var
 using StaticArrays: SVector, SMatrix
-using LinearAlgebra: norm, normalize, tr, I, cholesky, Symmetric
+using LinearAlgebra: norm, normalize, tr, I, cholesky, Symmetric, eigvals
 
 """
     BOLTZMANN_CONSTANT
@@ -31,7 +31,7 @@ export Parameters, simulate!
 export read_particles, read_parameters
 export Particle, Species, SimulationMesh, RelaxationMethod
 export DiffuseWall, SpecularWall
-export StandardESFP, ExactESFP, MidpointESFP
+export StandardESFP, ExactESFP, MidpointESFP, USPESFP
 export init_uniform
 export Variable, SimulationMesh
 

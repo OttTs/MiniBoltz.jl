@@ -105,3 +105,63 @@ function relax(v, Δt, species::Species, n, u, Σ, ::MidpointESFP)
     c = (γ⁻ * c + d * ξ) / γ⁺
     return u + c
 end
+
+"""
+    USPESFP <: RelaxationMethod
+
+Unified Stochastic Particle ES-FP collision step.
+"""
+struct USPESFP <: RelaxationMethod end
+
+function relax(v, Δt, species::Species, n, u, Σ, ::USPESFP)
+    Pr = species.prandtl_number
+    T = temperature(Σ, species.mass)
+    p = n * BOLTZMANN_CONSTANT * T
+    μ = dynamic_viscosity(T, species.reference_viscosity, species.reference_temperature, species.reference_exponent)
+    ε = μ / p
+
+    c = v - u
+
+    if Δt / ε ≤ 2 / Pr
+        α = ((2 - Pr * Δt / ε) / (2 + Pr * Δt / ε))^(1/3)
+    else
+        α = -((Pr * Δt / ε - 2) / (2 + Pr * Δt / ε))^(1/3)
+    end
+    β = 1 / (1 - α^2) * ((2 - Δt / ε) / (2 + Δt / ε) - α^2)
+
+    R = BOLTZMANN_CONSTANT / species.mass
+    ρ = n * species.mass
+    σ = ρ * (Σ - tr(Σ) / 3 * I)
+
+    Π = Symmetric(R * T * I + β * σ / ρ)
+    L = try
+        cholesky(Π).L
+    catch
+        P = ρ * Σ
+        if β ≤ 0
+            λₘₐₓ = maximum(eigvals(P))
+            β = - R * T / (λₘₐₓ / ρ - R * T)
+        else
+            λₘᵢₙ = minimum(eigvals(P))
+            β = R * T / (R * T - λₘᵢₙ / ρ)
+        end
+
+        α² = (β - (2 - Δt / ε) / (2 + Δt / ε)) / (β - 1)
+        α₁ = √α²
+        α₂ = -α₁
+        Pr₁ = 2 * (1 - α₁^3) / ((Δt / ε) * (1 + α₁^3))
+        Pr₂ = 2 * (1 - α₂^3) / ((Δt / ε) * (1 + α₂^3))
+        if abs(Pr₁ - Pr) < abs(Pr₂ - Pr)
+            α = α₁
+        else
+            α = α₂
+        end
+
+        Π = Symmetric(R * T * I + β * σ / ρ)
+        cholesky(Π).L
+    end
+    ξ = randn(typeof(u))
+
+    c = α * c + sqrt(1 - α^2) * L * ξ
+    return u + c
+end
