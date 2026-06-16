@@ -74,3 +74,34 @@ function relax(v, Δt, species::Species, n, u, Σ, ::ExactESFP)
         c = exp(-Δt / τ) * c + d * ξ
         return u + c
 end
+
+"""
+    MidpointESFP <: RelaxationMethod
+
+Midpoint ES-FP collision step.
+"""
+struct MidpointESFP <: RelaxationMethod end
+
+function relax(v, Δt, species::Species, n, u, Σ, ::MidpointESFP)
+    Pr = species.prandtl_number
+    T = temperature(Σ, species.mass)
+    τ = relaxation_time(n, T, species)
+
+    c = v - u
+
+    ν = 1 - 3 / (2 * Pr)
+
+    γ⁻ = 1 - Δt / (2 * τ)
+    γ⁺ = 1 + Δt / (2 * τ)
+
+    β⁻ = γ⁺^2 - Δt * ν / τ
+    β⁺ = γ⁻^2 + Δt * ν / τ
+    Σⁿ⁺¹ = (β⁺ * Σ + 2 * (1 - ν) * Δt / τ * tr(Σ)/3 * I) / β⁻
+
+    D = Symmetric((1-ν) * tr(Σ) / 3 * I + ν / 2 * (Σ + Σⁿ⁺¹)) * 2 * Δt / τ
+    d = cholesky(D).L
+    ξ = randn(typeof(u))
+
+    c = (γ⁻ * c + d * ξ) / γ⁺
+    return u + c
+end

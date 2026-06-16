@@ -31,7 +31,7 @@ export Parameters, simulate!
 export read_particles, read_parameters
 export Particle, Species, SimulationMesh, RelaxationMethod
 export DiffuseWall, SpecularWall
-export StandardESFP, ExactESFP
+export StandardESFP, ExactESFP, MidpointESFP
 export init_uniform
 export Variable, SimulationMesh
 

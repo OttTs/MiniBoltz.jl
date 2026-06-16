@@ -70,7 +70,7 @@ using LinearAlgebra: tr
         Σ_exact = cov(collect(MiniBoltz.relax(i, τ/4, species, n, μ, Σ_exact, ExactESFP()) for i in v))
 
         # Relax with both methods and check that the covariance is close to the expected value
-        v_standard, v_exact = copy(v), copy(v)
+        v_standard, v_exact, v_midpoint = copy(v), copy(v), copy(v)
         nsteps = 100
         for _ in 1:nsteps
             Δt = τ/4 / nsteps
@@ -84,9 +84,15 @@ using LinearAlgebra: tr
             MiniBoltz.@batch for i in eachindex(v_exact)
                 v_exact[i] = MiniBoltz.relax(v_exact[i], Δt, species, n, μ, Σ_iter, ExactESFP())
             end
+
+            Σ_iter = cov(v_midpoint)
+            MiniBoltz.@batch for i in eachindex(v_midpoint)
+                v_midpoint[i] = MiniBoltz.relax(v_midpoint[i], Δt, species, n, μ, Σ_iter, MidpointESFP())
+            end
         end
         @test cov(v_standard) ≈ Σ_exact atol=2000
         @test cov(v_exact) ≈ Σ_exact atol=2000
+        @test cov(v_midpoint) ≈ Σ_exact atol=2000
     end
 
     @testset "Particle reflection" begin
