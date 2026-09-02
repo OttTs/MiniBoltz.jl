@@ -69,10 +69,10 @@ function relax(v, Δt, species::Species, n, u, Σ, ::ExactESFP)
         # Fallback: Standard FP relaxation
         √(1 - exp(-2Δt / τ)) * cholesky(Symmetric(0 * D + tr(Σ)/3 * I)).L
     end
-        ξ = randn(typeof(u))
+    ξ = randn(typeof(u))
 
-        c = exp(-Δt / τ) * c + d * ξ
-        return u + c
+    c = exp(-Δt / τ) * c + d * ξ
+    return u + c
 end
 
 """
@@ -140,10 +140,11 @@ function relax(v, Δt, species::Species, n, u, Σ, ::USPESFP)
         P = ρ * Σ
         if β ≤ 0
             λₘₐₓ = maximum(eigvals(P))
-            β = - R * T / (λₘₐₓ / ρ - R * T)
+            # (1. - 1.e-12) makes it strictly positive definite
+            β = - (1. - 1.e-12) * R * T / (λₘₐₓ / ρ - R * T)
         else
             λₘᵢₙ = minimum(eigvals(P))
-            β = R * T / (R * T - λₘᵢₙ / ρ)
+            β = (1. - 1.e-12) * R * T / (R * T - λₘᵢₙ / ρ)
         end
 
         α² = (β - (2 - Δt / ε) / (2 + Δt / ε)) / (β - 1)
